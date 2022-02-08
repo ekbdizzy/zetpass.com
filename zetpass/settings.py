@@ -9,7 +9,7 @@ SECRET_KEY = env('SECRET_KEY', 'template_secret_key')
 DEBUG = env.bool('DEBUG', False)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 INTERNAL_IPS = env.list('INTERNAL_IPS')
-
+AUTH_USER_MODEL = 'users.ZetUser'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,6 +18,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django_extensions',
+
+    'users',
 ]
 
 MIDDLEWARE = [
