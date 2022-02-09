@@ -11,6 +11,7 @@ class ZetUserManager(BaseUserManager):
 
     def create_user(self, username, password, **extra_fields):
         """Create and save a User."""
+        extra_fields.setdefault('is_active', True)
         email = extra_fields.get('email', None)
         if email:
             email = self.normalize_email(email)
@@ -26,7 +27,7 @@ class ZetUserManager(BaseUserManager):
         user.save()
         return user
 
-    def create_superuser(self, password, **extra_fields):
+    def create_superuser(self, username, password, **extra_fields):
         """Create and save a SuperUser."""
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
@@ -35,7 +36,7 @@ class ZetUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
-        return self.create_user(password, **extra_fields)
+        return self.create_user(username, password, **extra_fields)
 
 
 class ZetUser(AbstractBaseUser, PermissionsMixin):
@@ -62,3 +63,8 @@ class ZetUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+    class Meta:
+        verbose_name = 'Zet User'
+        verbose_name_plural = 'Zet Users'
+        ordering = ('username',)
