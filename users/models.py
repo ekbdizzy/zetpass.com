@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
 
@@ -8,13 +9,19 @@ class ZetUserManager(BaseUserManager):
     https://docs.djangoproject.com/en/4.0/topics/auth/customizing/#writing-a-manager-for-a-custom-user-model
     """
 
-    def create_user(self, password, **extra_fields):
+    def create_user(self, username, password, **extra_fields):
         """Create and save a User."""
         email = extra_fields.get('email', None)
         if email:
             email = self.normalize_email(email)
 
-        user = self.model(email=email, **extra_fields)
+        if username is None:
+            raise ValueError('The given username must be set')
+
+        if len(username) < 4:
+            raise ValueError('The given username must contain at least 4 characters.')
+
+        user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save()
         return user
@@ -25,16 +32,22 @@ class ZetUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
         if extra_fields.get('is_staff') is not True:
-            raise ValueError(_('Superuser must have is_staff=True.'))
+            raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError(_('Superuser must have is_superuser=True.'))
+            raise ValueError('Superuser must have is_superuser=True.')
         return self.create_user(password, **extra_fields)
 
 
 class ZetUser(AbstractBaseUser, PermissionsMixin):
     """User model. Based in AbstractBaseUser because this way seems more obvious
     to redefine email from standard user model and get rid of extra fields."""
-    username = models.CharField(max_length=150, db_index=True, unique=True)
+
+    username_validator = UnicodeUsernameValidator()
+
+    username = models.CharField(max_length=150,
+                                db_index=True,
+                                unique=True,
+                                validators=[username_validator])
     email = models.EmailField(max_length=150, null=True, blank=True, unique=True)
     is_active = models.BooleanField(db_index=True, default=True)
     is_staff = models.BooleanField(db_index=True, default=False)
