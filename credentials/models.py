@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import ZetUser
+from access_options.models import UserIP
 
 
 class Service(models.Model):
@@ -50,8 +51,8 @@ class PrivateToken(models.Model):
     """Token of private or public service.
     By default access is allowed from limited IPs.
     Named PrivateToken to avoid confusion with other tokens."""
-    user = models.ForeignKey(ZetUser, on_delete=models.CASCADE, related_name='notes')
+    user = models.ForeignKey(ZetUser, on_delete=models.CASCADE, related_name='tokens')
     name = models.CharField(max_length='150', db_index=True)
     encrypted_app_id = models.CharField('ID of client or app', max_length=64, blank=True)
     encrypted_token = models.CharField('Token', max_length=300)
-    allowed_ips = models.ManyToManyField(to='UserIP', related_name='tokens')
+    allowed_ips = models.ManyToManyField(UserIP, related_name='tokens')

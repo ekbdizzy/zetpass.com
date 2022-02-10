@@ -23,6 +23,7 @@ INSTALLED_APPS = [
 
     'users',
     'credentials',
+    'access_options',
 ]
 
 MIDDLEWARE = [
