@@ -30,7 +30,7 @@ class Note(models.Model):
 
 class Links(models.Model):
     """List of private or shared links, grouped by common idea.
-     It doesn't link to service and save data as list of links.
+     It doesn't refer to service and saves data as array of links.
      By default is not encrypted. Public links cannot be encrypted."""
     # TODO add url_hash to generate public links (use hashlib.md5.hexdigest()[:10])
     user = models.ForeignKey(ZetUser, on_delete=models.CASCADE, related_name='links_groups')
@@ -52,7 +52,7 @@ class PrivateToken(models.Model):
     By default access is allowed from limited IPs.
     Named PrivateToken to avoid confusion with other tokens."""
     user = models.ForeignKey(ZetUser, on_delete=models.CASCADE, related_name='tokens')
-    name = models.CharField(max_length='150', db_index=True)
+    name = models.CharField(max_length=150, db_index=True)
     encrypted_app_id = models.CharField('ID of client or app', max_length=64, blank=True)
     encrypted_token = models.CharField('Token', max_length=300)
     allowed_ips = models.ManyToManyField(UserIP, related_name='tokens')
